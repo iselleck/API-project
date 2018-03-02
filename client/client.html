@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>What to do? </title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script type="text/babel">
+
+ const parseJSON = (xhr, content, info) => {
+      const data = JSON.parse(xhr.response);
+      if(data.tasks) {
+          
+          content.innerHTML = "";
+          
+        let keys = Object.keys(data.tasks);
+
+        const createDate = (date) => {
+          
+        }
+       
+          
+        for(let i = 0; i < keys.length; i++){
+
+          let dateAdded = new Date(data.tasks[keys[i]].dateadded);
+          let dayAdded = dateAdded.getDate();
+          let monthAdded = dateAdded.getMonth()+1; 
+          let yearAdded = dateAdded.getFullYear();
+           if(dayAdded < 10) {
+            dayAdded = '0' + dayAdded
+          } 
+          if(monthAdded < 10) {
+            monthAdded = '0' + monthAdded
+            } 
+
+            dateAdded = monthAdded + '/' + dayAdded + '/' + yearAdded;
+
+            
+            let dueDate = new Date(data.tasks[keys[i]].dateToComp);
+          let dayDue = dueDate.getDate();
+          let monthDue = dueDate.getMonth()+1; 
+          let yearDue = dueDate.getFullYear();
+           if(dayDue < 10) {
+            dayDue = '0' + dayDue
+          } 
+          if(monthDue < 10) {
+            monthDue = '0' + monthDue
+            } 
+
+            dueDate = monthDue + '/' + dayDue + '/' + yearDue;
+
+            
+            
+            const task = document.createElement('div');
+            task.className = "task";
+            task.innerHTML = 
+            '<h1 id="title">' + data.tasks[keys[i]].title + '</h1> <p id="status"> Currently: '+ data.tasks[keys[i]].status +'</p> <p id="dateAdd"> Added: '+ dateAdded +'</p> <p id="due">Due: '+ dueDate +'</p> <div> <p id="uregentText">'+ data.tasks[keys[i]].urgent +'</p> <p id="important">'+ data.tasks[keys[i]].important +'</p></div> <p id="desc">'+ data.tasks[keys[i]].description +'</p>';
+            
+        
+        //  pinDiv.onclick = (e) => sendAjax(e, `/drink/${data.drinks[keys[i]].name}`);
+        content.appendChild(task);
+    
+        };
+          
+      
+      }
+     
+     else if (data.requestedDrink) {
+        
+         
+         info.innerHTML = `<p><em>${data.requestedDrink.name}</em> <br><br> <img class="smImg" src=${data.requestedDrink.imgurl} width="125px" height="175px" /> <br>Made By: ${data.requestedDrink.company} <br> <br> Review: <br> ${data.requestedDrink.desc}</p>`;
+         
+   
+     } 
+    else if (data.filteredTasks){
+        content.innerHTML = "";
+        
+        let keys = Object.keys(data.filteredTasks);
+      
+        
+        for(let i = 0; i < keys.length; i++){
+            
+            const pinDiv = document.createElement('div');
+            pinDiv.className = "pinThumb";
+            pinDiv.innerHTML = '<img src='+data.filteredTasks[keys[i]].imgurl+' width="200px" height="250px" />';
+            
+        
+        // pinDiv.onclick = (e) => sendAjax(e, `/drink/${data.filteredTasks[keys[i]].name}`);
+        content.appendChild(pinDiv);
+    
+        };
+    } 
+    };
+
+
+
+const handleResponse = (xhr, paresResponse) => {
+   
+    const content = document.querySelector('#content');
+    const info = document.querySelector('#drinkInfo');
+        
+    console.log(xhr.getResponseHeader ('etag'));
+    
+    console.log(xhr.status);
+      
+      //check the status code
+      switch(xhr.status) {
+        case 200: //success
+        
+          break;
+        case 201: //created
+        
+          break;
+        case 204: 
+      
+          return;
+        case 304:
+     
+          break;
+        case 400: 
+       return false;
+          break;
+        case 404:
+              return false;
+              break;
+       
+        default: 
+     
+          break;
+      }
+    
+    
+    
+    if(paresResponse){
+     parseJSON(xhr, content, info);
+    } else {
+        console.log('recieved ')
+    }
+    
+};
+
+const sendAjax = (e, url) => {
+    
+    console.log(url);
+    
+    const method = "GET";
+    
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+  
+      xhr.setRequestHeader('Accept', 'application/json');
+
+      
+        xhr.onload = () => handleResponse(xhr, true);
+      
+      
+      xhr.send();
+      
+      e.preventDefault();
+    
+      return false;
+    
+};
+
+ 
+    const sendPost = (e, taskForm) => {
+      
+      const taskAction = taskForm.getAttribute('action');
+      const taskMethod = taskForm.getAttribute('method');
+      
+      const titleField = taskForm.querySelector('#titleField');
+      const dateToCompField = taskForm.querySelector('#dateToCompField');
+      const statusField = taskForm.querySelector('#statusField');
+      const descriptionField = taskForm.querySelector('#descriptionFld');
+
+
+      // Priority check boxes
+      const urgentBox = taskForm.querySelector('#urgent');
+      const importantBox = taskForm.querySelector('#important');
+
+      const dateAdded = new Date();
+        
+        
+        if(titleField == "" || statusField.value == "status" || descriptionField.value == "" ){
+       
+            return false;
+        };
+      
+      const xhr = new XMLHttpRequest();
+      
+      xhr.open(taskMethod, taskAction);
+      
+     
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+     
+      xhr.setRequestHeader ('Accept', 'application/json');
+      
+   
+      xhr.onload = () => handleResponse(xhr, true);
+      
+      const formData = `title=${titleField.value}&dateToComp=${dateToCompField.value}&status=${statusField.value}&description=${descriptionField.value}&urgent=${urgentBox.checked}&important=${importantBox.checked}&dateadded=${dateAdded}`;
+      
+      
+      xhr.send(formData);
+    
+      
+      e.preventDefault();
+      taskForm.reset();
+      
+      return false;
+    };
+
+const init = () => {
+    const taskForm = document.querySelector('#taskFormContainer');
+    const filters = document.querySelector('#filters');
+    const stat = document.querySelector('#statusField');
+    const filter = (e) => sendAjax(e, '/filter'+filters.querySelector('#queryField').value);    
+    const getAllTasks = (e) => sendAjax(e, '/getAllTasks');
+     const newTask = (e) => {
+         sendPost(e, taskForm);
+         getAllTasks();
+            };
+            
+stat.onchange = function () {
+  console.log(stat.value)
+}
+ 
+    filters.addEventListener('submit', filter);    
+    taskForm.addEventListener('submit', newTask);
+    getAllTasks();  
+    
+};
+
+
+window.onload = init();
+
+  </script>
+</head>
+
+<body>
+  <div id="formDiv">
+    <h3>What to Do? </h3>
+    <p>Fill out the fileds to add a task to do</p>
+    <form id="taskFormContainer" action="/newTask" method="post">
+      <div id="inputContainer">
+
+        <div id="inputDivs">
+          <label for="title">Task Title: </label>
+          <input id="titleField" type="text" name="title" placeholder="Title" />
+        </div>
+
+        <div id="inputDivs">
+          <label for="date">Date to complete: </label>
+          <input id="dateToCompField" type="date" name="date" placeholder="Date" />
+        </div>
+
+        <div id="inputDivs">
+          <label for="description">Task Description: </label>
+          <textarea id="descriptionFld" type="text" name="description" placeholder="Description"></textarea>
+        </div>
+
+        <select id='statusField'>
+          <option value='status'>status</option>
+          <option value='Not Started'>Not Started</option>
+          <option value='In Progress'>In progress</option>
+          <option value='Finished'>Finished</option>
+        </select>
+
+
+        <div id="priorityDiv">
+          <p>Priority: </p>
+          <input id="urgent" type="checkbox">Urgent</option>
+          <input id="important" type="checkbox">Important</option>
+        </div>
+
+
+        <input id="sub" type="submit" value="Add Task" />
+      </div>
+    </form>
+
+    <form id="filters" action="/filter" method="get">
+      <input type="submit" value="Filter" id="Filter By" />
+      <select id='queryField'>
+        <option value='?type=priority'>Priority</option>
+        <option value='?type=dtoc'>Date to Complete</option>
+        <option value='?type=dateadded'>Date added</option>
+        <option value='?type=notstarted'>Not Started</option>
+        <option value='?type=inprog'>In progress</option>
+        <option value='?type=finished'>Finished</option>
+      </select>
+
+    </form>
+
+  </div>
+
+  <div id="content">
+  </div>
+</body>
+
+</html>

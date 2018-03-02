@@ -1,0 +1,124 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+    background-color: #F8F9FF;
+    text-align: center;
+}
+
+h3{
+    margin-top: 0;
+}
+
+#taskFormContainer{
+    display: block;
+    margin: 0 auto;
+    width: 40%;
+}
+
+#inputContainer{
+    text-align: left;
+}
+
+#inputDivs{
+    margin: 10px 0;
+}
+#inputDivs input{
+  width: 100%;
+  border: none;
+  border-bottom: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #009688;
+  background: #F8F9FF;
+}
+
+textarea{
+    width: 100%;
+    border: none;
+    border-bottom: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #009688;
+    background: #F8F9FF;
+}
+
+#priorityDiv p{
+    display: inline-block;
+}
+
+#priorityDiv{
+    display: inline-block;
+    margin-left: 40px;
+}
+
+#sub{
+    display: block;
+    width: 150px;
+    height: 35px;
+    margin: auto;
+}
+
+
+#filters{
+    margin-top: 10px;
+}
+
+
+#content {
+    width: 40%;
+  margin-top: 25px;
+  font-size: 2em;
+  text-align: center;
+    display: inline-block;
+}
+
+.task {
+
+    text-align: left;
+    margin: auto;
+    border-bottom: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #009688;
+    margin-top: 25px;
+}
+
+#title{
+    font-size: 24px;
+    margin: 0;
+    display: inline-block;
+}
+
+#status{
+    margin: 0;
+    display: inline-block;
+    font-size: 20px;
+    margin-left: 150px;
+}
+
+#dateAdd{
+    margin: 0;
+    display: inline-block;
+    font-size: 18px;
+}
+
+#due{
+    margin: 0;
+    font-size: 18px;
+    display: inline-block;
+    font-weight: bold;
+    margin-left: 30px;
+}
+
+#uregentText{
+    margin: 0;
+    display: inline-block;
+}
+
+#important {
+    margin: 0;
+    display: inline-block;
+}
+
+
+
+
