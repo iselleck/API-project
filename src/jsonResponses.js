@@ -80,6 +80,7 @@ const addTask = (request, response, body) => {
   if (tasks[body.title]) {
     responseCode = 204;
   } else {
+
     tasks[body.title] = {};
     tasks[body.title].title = body.title;
     tasks[body.title].dateToComp = body.dateToComp;
@@ -120,15 +121,15 @@ const filterTasks = (request, response, query) => {
     let filteredTasks = {}; 
     
     let keys = Object.keys(tasks);
-    
+  
     if(querys[1] === 'all'){
         return getTasks(request, response);
     } else {
     
     for(let i = 0; i < keys.length; i++){
     
-        if(tasks[keys[i]].type === querys[1]){
-            
+        if(tasks[keys[i]].urgent == "true" && querys[1] == "priority"){
+            console.log("keys: "+console.log("made it!"))
             if(filteredTasks[tasks[keys[i]].title]){
                // empty
             }else{

@@ -9,7 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
 
- const parseJSON = (xhr, content, info) => {
+ const parseJSON = (xhr, content) => {
       const data = JSON.parse(xhr.response);
       if(data.tasks) {
           
@@ -59,7 +59,7 @@
             '<h1 id="title">' + data.tasks[keys[i]].title + '</h1> <p id="status"> Currently: '+ data.tasks[keys[i]].status +'</p> <p id="dateAdd"> Added: '+ dateAdded +'</p> <p id="due">Due: '+ dueDate +'</p> <div> <p id="uregentText">'+ data.tasks[keys[i]].urgent +'</p> <p id="important">'+ data.tasks[keys[i]].important +'</p></div> <p id="desc">'+ data.tasks[keys[i]].description +'</p>';
             
         
-        //  pinDiv.onclick = (e) => sendAjax(e, `/drink/${data.drinks[keys[i]].name}`);
+        
         content.appendChild(task);
     
         };
@@ -67,13 +67,6 @@
       
       }
      
-     else if (data.requestedDrink) {
-        
-         
-         info.innerHTML = `<p><em>${data.requestedDrink.name}</em> <br><br> <img class="smImg" src=${data.requestedDrink.imgurl} width="125px" height="175px" /> <br>Made By: ${data.requestedDrink.company} <br> <br> Review: <br> ${data.requestedDrink.desc}</p>`;
-         
-   
-     } 
     else if (data.filteredTasks){
         content.innerHTML = "";
         
@@ -81,14 +74,42 @@
       
         
         for(let i = 0; i < keys.length; i++){
+
+          let dateAdded = new Date(data.filteredTasks[keys[i]].dateadded);
+          let dayAdded = dateAdded.getDate();
+          let monthAdded = dateAdded.getMonth()+1; 
+          let yearAdded = dateAdded.getFullYear();
+           if(dayAdded < 10) {
+            dayAdded = '0' + dayAdded
+          } 
+          if(monthAdded < 10) {
+            monthAdded = '0' + monthAdded
+            } 
+
+            dateAdded = monthAdded + '/' + dayAdded + '/' + yearAdded;
+
             
-            const pinDiv = document.createElement('div');
-            pinDiv.className = "pinThumb";
-            pinDiv.innerHTML = '<img src='+data.filteredTasks[keys[i]].imgurl+' width="200px" height="250px" />';
+            let dueDate = new Date(data.filteredTasks[keys[i]].dateToComp);
+          let dayDue = dueDate.getDate();
+          let monthDue = dueDate.getMonth()+1; 
+          let yearDue = dueDate.getFullYear();
+           if(dayDue < 10) {
+            dayDue = '0' + dayDue
+          } 
+          if(monthDue < 10) {
+            monthDue = '0' + monthDue
+            } 
+
+            dueDate = monthDue + '/' + dayDue + '/' + yearDue;
+            
+            const task = document.createElement('div');
+            task.className = "task";
+            task.innerHTML = 
+            '<h1 id="title">' + data.filteredTasks[keys[i]].title + '</h1> <p id="status"> Currently: '+ data.filteredTasks[keys[i]].status +'</p> <p id="dateAdd"> Added: '+ dateAdded +'</p> <p id="due">Due: '+ dueDate +'</p> <div> <p id="uregentText">'+ data.filteredTasks[keys[i]].urgent +'</p> <p id="important">'+ data.filteredTasks[keys[i]].important +'</p></div> <p id="desc">'+ data.filteredTasks[keys[i]].description +'</p>';
             
         
-        // pinDiv.onclick = (e) => sendAjax(e, `/drink/${data.filteredTasks[keys[i]].name}`);
-        content.appendChild(pinDiv);
+        
+        content.appendChild(task);
     
         };
     } 
@@ -99,7 +120,7 @@
 const handleResponse = (xhr, paresResponse) => {
    
     const content = document.querySelector('#content');
-    const info = document.querySelector('#drinkInfo');
+    
         
     console.log(xhr.getResponseHeader ('etag'));
     
@@ -134,7 +155,7 @@ const handleResponse = (xhr, paresResponse) => {
     
     
     if(paresResponse){
-     parseJSON(xhr, content, info);
+     parseJSON(xhr, content);
     } else {
         console.log('recieved ')
     }
